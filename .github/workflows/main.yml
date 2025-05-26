@@ -21,13 +21,12 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ubuntu/student_project/Student_project
-            source /home/ubuntu/student_project/venv/bin/activate
-            git pull origin main
-            pip install -r requirements.txt
-            python manage.py collectstatic --noinput
-            sudo systemctl reload nginx
-            fuser -k 8000/tcp || true
-            nohup python manage.py runserver 127.0.0.1:8000 &
-          EOF
+          ssh -T -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "\
+            cd /home/ubuntu/student_project/Student_project && \
+            source /home/ubuntu/student_project/venv/bin/activate && \
+            git pull origin main && \
+            pip install -r requirements.txt && \
+            python manage.py collectstatic --noinput && \
+            sudo systemctl reload nginx && \
+            fuser -k 8000/tcp || true && \
+            nohup python manage.py runserver 127.0.0.1:8000 &"
